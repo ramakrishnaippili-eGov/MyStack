@@ -2,73 +2,79 @@ package org.egov.bootcamp;
 
 import org.egov.StackException;
 
-public class MyStack<E> {
-	private static final int DEFAULT_CAPACITY = 10;
-	private int top; // top element index
-	private Object[] elements;
+public class MyStack<T> {
+	private Node<T> top;
 
 	/**
-	 * Creates a Stack of the size initialCapacity
-	 */
-	public MyStack(int initialCapacity) {
-		if (initialCapacity > 0)
-			elements = (Object[]) new Object[initialCapacity];
-		else
-			elements = (Object[]) new Object[DEFAULT_CAPACITY];
-
-		top = -1; // stack is empty
-	}
-
-	/**
-	 * Creates a Stack with the default capacity
+	 * Creates a Stack
 	 */
 	public MyStack() {
-		this(DEFAULT_CAPACITY);
+		top = null;
 	}
 
 	/**
-	 * checks if the stack is empty.
+	 * Tests if the stack is empty.
 	 */
 	public boolean isEmpty() {
-		return top == -1;
+		return top == null;
 	}
 
 	/**
-	 * Returns the top element.
+	 * Make the stack logically empty.
 	 */
-	@SuppressWarnings("unchecked")
-	public E peek() {
-		if (isEmpty())
-			throw new StackException("Stack is empty");
-		return (E) elements[top];
+	public void clear() {
+		top = null;
+	}
+
+	/**
+	 * Inserts a new item into the stack.
+	 */
+	public void push(T data) {
+		if (data == null)
+			throw new NullPointerException();
+		top = new Node<T>(data, top);
 	}
 
 	/**
 	 * Removes and returns the item at the top of this stack.
 	 */
-	public E pop() {
-		E e = peek();
-		elements[top] = null; // make sure the object is destroyed
-		top--;
-		return e;
+	public T pop() {
+		if (isEmpty())
+			return null;
+		T data = top.value;
+		top = top.next;
+		return data;
 	}
 
 	/**
-	 * Inserts an item onto the top of the stack.
+	 * Returns the top item without its removal
 	 */
-	public void push(E e) {
-		if (top == elements.length-1)
-			throw new StackException("Stack has overflowed");
-		top++;
-		elements[top] = e;
+	public T peek() {
+		if (isEmpty())
+			throw new StackException("Stack is empty");
+		return top.value;
 	}
 
-	/**
-	 * Removes all items from the Stack.
-	 */
-	public void clear() {
-		for (int i = 0; i <= top; i++)
-			elements[i] = null;
-		top = -1;
+	public int length(Node<T> listPointer, int totalLength) {
+		if (listPointer == null) {
+			return totalLength;
+		}
+		return length(listPointer.getNext(), ++totalLength);
 	}
+
+	public int length() {
+		return length(top, 0);
+	}
+	
+    public T[] toArray() {
+        int listLength = this.length();
+        T[] array = (T[]) new Object[listLength];
+        Node listPointer = top;
+        for (int i = 0; i < listLength; i++) {
+            array[i] = (T) listPointer.getValue();
+            listPointer = listPointer.getNext();
+        }
+        return array;
+    }
+
 }
